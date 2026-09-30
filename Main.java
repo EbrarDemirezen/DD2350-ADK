@@ -1,6 +1,6 @@
 import java.io.*;
 import java.util.*;
-
+//Test
 // One node in the tree. In a leaf, "max" is the stored value.
 // In an inner node, "max" is the biggest value anywhere below it (maxinsubtree).
 class Node {
