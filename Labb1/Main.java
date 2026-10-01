@@ -1,6 +1,6 @@
 import java.io.*;
 import java.util.*;
-//Test
+
 // One node in the tree. In a leaf, "max" is the stored value.
 // In an inner node, "max" is the biggest value anywhere below it (maxinsubtree).
 class Node {
@@ -14,7 +14,7 @@ class Node {
     }
 }
 
-// One version of the array = a root and the height of the tree.
+// One version of the array = a root and the height of the agytree.
 class PersistantArray {
     Node root;   // null means "nothing stored yet"
     int height;  // 0 means the root is a leaf
