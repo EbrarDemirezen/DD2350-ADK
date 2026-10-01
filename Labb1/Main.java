@@ -99,7 +99,7 @@ public class Main {
         // If right is too big, shrink it to the biggest index the tree can hold
         // (all ones in the lowest "height" bits).
         if ((right >> a.height) != 0) {
-            right = ~(-1 << a.height);
+            right = (1 << a.height) - 1;
         }
 
         int result = maxsegment(a.root, left, right, a.height);
