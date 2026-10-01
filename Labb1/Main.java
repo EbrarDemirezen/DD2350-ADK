@@ -48,12 +48,12 @@ public class Main {
             height++;
         }
 
-        Node newRoot = setRec(root, i, value, height);
+        Node newRoot = setRecursionursion(root, i, value, height);
         return new PersistantArray(newRoot, height);
     }
 
     // Copies the nodes on the path to index i, everything else is shared.
-    static Node setRec(Node node, int i, int value, int level) {
+    static Node setRecursionursion(Node node, int i, int value, int level) {
         if (level == 0) {
             return new Node(value, null, null);   // new leaf
         }
@@ -67,9 +67,9 @@ public class Main {
 
         int bit = (i >> (level - 1)) & 1;
         if (bit == 0) {
-            left = setRec(left, i, value, level - 1);
+            left = setRecursionursion(left, i, value, level - 1);
         } else {
-            right = setRec(right, i, value, level - 1);
+            right = setRecursionursion(right, i, value, level - 1);
         }
 
         int newMax = Math.max(maxOf(left), maxOf(right));
