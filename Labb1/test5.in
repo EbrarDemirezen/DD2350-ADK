@@ -1,0 +1,11 @@
+get 0
+get 100
+maxininterval 0 10
+set 7 777
+maxininterval 5 9
+maxininterval 7 7
+maxininterval 8 10
+unset
+unset
+unset
+get 7

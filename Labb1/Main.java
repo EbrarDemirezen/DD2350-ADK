@@ -122,7 +122,8 @@ public class Main {
         int b = maxleftsegment(node.right, right, level - 1);
         return Math.max(a, b);
     }
-
+    
+    // Calling this inside the left subt
     static int maxrightsegment(Node node, int left, int level) {
         if (node == null) return -1;
         if (level == 0) return node.max;

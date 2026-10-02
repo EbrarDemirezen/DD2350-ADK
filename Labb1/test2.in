@@ -1,0 +1,8 @@
+set 0 42
+get 0
+set 5 99
+get 5
+get 0
+unset
+get 5
+get 0

@@ -1,0 +1,15 @@
+set 0 5
+set 1 3
+set 2 8
+set 3 1
+set 4 6
+set 0 100
+unset
+unset
+unset
+get 0
+get 2
+maxininterval 0 4
+unset
+unset
+get 0
