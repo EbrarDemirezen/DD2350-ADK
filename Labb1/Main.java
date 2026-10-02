@@ -1,8 +1,7 @@
 import java.io.*;
 import java.util.*;
 
-// One node in the tree. In a leaf, "max" is the stored value.
-// In an inner node, "max" is the biggest value anywhere below it (maxinsubtree).
+// A node inside the tree has "max" as the biggest underneath it (maxinsubtree)
 class Node {
     int max;
     Node left, right;
@@ -14,10 +13,10 @@ class Node {
     }
 }
 
-// One version of the array = a root and the height of the agytree.
+// PersistantArray is like versions/snapshots of all our trees
 class PersistantArray {
-    Node root;   // null means "nothing stored yet"
-    int height;  // 0 means the root is a leaf
+    Node root;                  // null means empty array
+    int height;
 
     PersistantArray(Node root, int height) {
         this.root = root;
@@ -27,13 +26,13 @@ class PersistantArray {
 
 public class Main {
 
-    // Biggest value in a node, or -1 if there is no node (-1 = "nothing here")
+    // Value of node or -1 if there is no node
     static int maxOf(Node n) {
         if (n == null) return -1;
         return n.max;
     }
 
-    static PersistantArray newarray() {
+    static PersistantArray newArray() {
         return new PersistantArray(null, 0);
     }
 
@@ -41,8 +40,7 @@ public class Main {
         Node root = a.root;
         int height = a.height;
 
-        // Does i fit in the tree? If not, add a level on top
-        // (the old root becomes the left child of the new root).
+        // amount of index in tree: 0 to (2^height - 1). If i is bigger, the tree needs to grow, add a level on top (the old root becomes the left child of the new root)
         while ((i >> height) != 0) {
             root = new Node(maxOf(root), root, null);
             height++;
@@ -52,13 +50,13 @@ public class Main {
         return new PersistantArray(newRoot, height);
     }
 
-    // Copies the nodes on the path to index i, everything else is shared.
+    // wE go down the tree to place value at index i
     static Node setRecursion(Node node, int i, int value, int level) {
-        if (level == 0) {
-            return new Node(value, null, null);   // new leaf
+        if (level == 0) {                           // if we're in level 0 (bottom), we create a new leaf
+            return new Node(value, null, null);
         }
 
-        Node left = null;
+        Node left = null;                           // temporary variables left and right, both null
         Node right = null;
         if (node != null) {
             left = node.left;
@@ -84,75 +82,72 @@ public class Main {
         while (node != null && level > 0) {
             int bit = (i >> (level - 1)) & 1;
             if (bit == 0) node = node.left;
-            else node = node.right;
+            else node = node.right;             // choosing between left and right to reach level 0 and the leaf
             level--;
         }
 
-        if (node == null) return 0;   // never assigned
-        return node.max;
+        if (node == null) return 0;             // if the node is null (not set a value)
+        return node.max;                        // othwerwise return value
     }
 
     static int maxininterval(PersistantArray a, int left, int right) {
         if (left > right) return 0;
-        if ((left >> a.height) != 0) return 0;   // whole interval is outside the tree
+        if ((left >> a.height) != 0) return 0;   // if interval is outside the tree
 
-        // If right is too big, shrink it to the biggest index the tree can hold
-        // (all ones in the lowest "height" bits).
+        // If right is too big, we isntead choose the biggest index we have in the tree
         if ((right >> a.height) != 0) {
             right = (1 << a.height) - 1;
         }
 
         int result = maxsegment(a.root, left, right, a.height);
-        if (result == -1) return 0;
+        if (result == -1) return 0;             // if no node
         return result;
     }
 
-    // Biggest value in indices left..right, inside the tree with this root.
     static int maxsegment(Node node, int left, int right, int level) {
-        if (node == null) return -1;            // Case A
-        if (level == 0) return node.max;        // Case B
+        if (node == null) return -1;            // Fall 1 if empty node
+        if (level == 0) return node.max;        // Fall 2 if we're at a leaf
 
         int leftBit = (left >> (level - 1)) & 1;
         int rightBit = (right >> (level - 1)) & 1;
 
-        if (leftBit == 0 && rightBit == 0) {    // Case C
+        if (leftBit == 0 && rightBit == 0) {    // Fall 3, both nodes are in left subtree
             return maxsegment(node.left, left, right, level - 1);
         }
-        if (leftBit == 1 && rightBit == 1) {    // Case D
+        if (leftBit == 1 && rightBit == 1) {    // Fall 4, both nodes are in right subtree
             return maxsegment(node.right, left, right, level - 1);
         }
-        // Case E: left is in the left subtree, right is in the right subtree
+        // Fall 5, left is in left subtree, right is in right subtree
         int a = maxrightsegment(node.left, left, level - 1);
         int b = maxleftsegment(node.right, right, level - 1);
         return Math.max(a, b);
     }
 
-    // Biggest value at indices >= left inside this subtree.
     static int maxrightsegment(Node node, int left, int level) {
         if (node == null) return -1;
         if (level == 0) return node.max;
 
         int bit = (left >> (level - 1)) & 1;
         if (bit == 0) {
-            // left is in the left subtree, so the WHOLE right subtree counts
+            // 
             return Math.max(maxrightsegment(node.left, left, level - 1), maxOf(node.right));
         } else {
-            // left is in the right subtree, the left subtree is too small to count
+            // 
             return maxrightsegment(node.right, left, level - 1);
         }
     }
 
-    // Biggest value at indices <= right inside this subtree.
+    // 
     static int maxleftsegment(Node node, int right, int level) {
         if (node == null) return -1;
         if (level == 0) return node.max;
 
         int bit = (right >> (level - 1)) & 1;
         if (bit == 1) {
-            // right is in the right subtree, so the WHOLE left subtree counts
+            // 
             return Math.max(maxOf(node.left), maxleftsegment(node.right, right, level - 1));
         } else {
-            // right is in the left subtree, the right subtree is too big to count
+            // 
             return maxleftsegment(node.left, right, level - 1);
         }
     }
@@ -161,13 +156,13 @@ public class Main {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder out = new StringBuilder();
 
-        // Every version ever made. The last one is the current one.
+        // We store all versions/snapshots in this array lsit
         ArrayList<PersistantArray> versions = new ArrayList<>();
-        versions.add(newarray());
+        versions.add(newArray());
 
-        String line;
-        while ((line = in.readLine()) != null) {
-            String[] parts = line.trim().split(" ");
+        String text;
+        while ((text = in.readLine()) != null) {
+            String[] parts = text.trim().split(" ");
             PersistantArray current = versions.get(versions.size() - 1);
 
             if (parts[0].equals("set")) {
